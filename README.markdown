@@ -2,8 +2,6 @@ Panada PDO
 =================
 [PDO](http://php.net/manual/en/book.pdo.php) implementation for [Panada PHP Framework](https://github.com/panada/Panada)
 
-## WARNING: NOT READY FOR USED YET
-
 ## Usage Example:
 ### Configure database option:
 
@@ -53,3 +51,22 @@ $this->db = new Resources\Database('default_pdo');
 	var_dump($data);
 ```
 
+### Using Query Builder
+```php
+<?php
+	$data = $this->db->select('user_name')->from('users')->getAll();
+	var_dump($data);
+
+	$data = $this->db->select('users.user_name', 'posts.post_content')->from('users')->join('posts')->on('users.user_id', '=', 'posts.post_author')->getAll(); 
+	var_dump($data);
+	
+	$data = $this->db->insert('users', array('user_name' => 'Azhari', 'user_id' => '123')); 
+	var_dump($data);
+	
+	$data = $this->db->update('users', array('user_name' => 'jhon gmail'), array('user_id' => 2122)); 
+	var_dump($data);
+	
+	echo $this->db->insertId();
+	echo $this->db->getLastQuery();
+	echo $this->db->version();
+```
