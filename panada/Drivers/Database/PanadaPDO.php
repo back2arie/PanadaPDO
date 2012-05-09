@@ -119,12 +119,23 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * API for "... DISTINCT " statement.
+	 *
+	 * @return object
+	 */
 	public function distinct(){
 		
 		$this->distinct = true;
 		return $this;
 	}
 	
+	/**
+	 * API for "...FROM ... " statement.
+	 *
+	 * @param string $table1, $table2 etc ...
+	 * @return object
+	 */
 	public function from(){
 		
 		$tables = func_get_args();
@@ -136,6 +147,12 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * API for "... JOIN ..." statement.
+	 *
+	 * @param string $table Table to join
+	 * @param string $type Type of join: LEFT, RIGHT, INNER
+	 */
 	public function join( $table, $type = null ){
 		
 		$this->joins = $table;
@@ -144,6 +161,14 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * Create criteria condition. It use in on, where and having method
+	 *
+	 * @param string $column
+	 * @param string $operator
+	 * @param string $value
+	 * @param mix $separator
+	 */
 	protected function createCriteria($column, $operator, $value, $separator){
 	
 		if( is_string($value) && $this->isQuotes ){
@@ -164,8 +189,16 @@ class PanadaPDO implements Interfaces\Database {
 			$return .= ' '.strtoupper($separator);
 		
 		return $return;
-    }
+	}
 	
+	/**
+	 * API for "... JOIN ON..." statement.
+	 *
+	 * @param string $column
+	 * @param string $operator
+	 * @param string $value
+	 * @param mix $separator
+	 */
 	public function on( $column, $operator, $value, $separator = false ){
 		
 		$this->isQuotes = false;
@@ -175,6 +208,15 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * API for "... WHERE ... " statement.
+	 *
+	 * @param string $column Column name
+	 * @param string $operator SQL operator string: =,<,>,<= dll
+	 * @param string $value Where value
+	 * @param string $separator Such as: AND, OR
+	 * @return object
+	 */
 	public function where( $column, $operator, $value, $separator = false ){
 		
 		if( is_string($value) ){
@@ -191,12 +233,26 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * API for "... GROUP BY ... " statement.
+	 *
+	 * @param string $column1, $column2 etc ...
+	 * @return object
+	 */
 	public function groupBy(){
 		
 		$this->groupBy = implode(', ', func_get_args());
 		return $this;
 	}
-	
+
+	/**
+	 * API for "... HAVING..." statement.
+	 *
+	 * @param string $column
+	 * @param string $operator
+	 * @param string $value
+	 * @param mix $separator
+	 */
 	public function having( $column, $operator, $value, $separator = false ){
 		
 		$this->isHaving[] = $this->createCriteria($column, $operator, $value, $separator);
@@ -204,6 +260,12 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * API for "... ORDER BY..." statement.
+	 *
+	 * @param string $column1, $column2 etc ...
+	 * @return object
+	 */
 	public function orderBy( $column, $order = null ){
 		
 		$this->orderBy = $column;
@@ -211,6 +273,14 @@ class PanadaPDO implements Interfaces\Database {
 		
 		return $this;
 	}
+	
+	/**
+	 * API for "... LIMIT ..." statement.
+	 *
+	 * @param int
+	 * @param int Optional offset value
+	 * @return object
+	 */
 	public function limit( $limit, $offset = null ){
 		
 		$this->limit = $limit;
@@ -219,6 +289,11 @@ class PanadaPDO implements Interfaces\Database {
 		return $this;
 	}
 	
+	/**
+	 * Build the SQL statement.
+	 *
+	 * @return string The complited SQL statement
+	 */
 	public function command(){
 		
 		$query = 'SELECT ';
@@ -296,11 +371,21 @@ class PanadaPDO implements Interfaces\Database {
 		return $query;
 	}
 	
+	/**
+	 * Start transaction.
+	 *
+	 * @return void
+	 */
 	public function begin(){
 		
 		$this->link->beginTransaction();
 	}
 	
+	/**
+	 * Commit transaction.
+	 *
+	 * @return void
+	 */
 	public function commit(){
 		
 		$this->link->commit();
@@ -311,6 +396,12 @@ class PanadaPDO implements Interfaces\Database {
 		$this->link->rollBack();
 	}
 	
+	/**
+	 * Escape all unescaped string
+	 *
+	 * @param string $string
+	 * @return void
+	 */
 	public function escape( $string ){
 		
 		return $string;
@@ -334,6 +425,14 @@ class PanadaPDO implements Interfaces\Database {
 		return $query;
 	}
 	
+	/**
+	 * Get multiple record.
+	 * 
+	 * @param mix $table
+	 * @param array $where
+	 * @param array $fields
+	 * @return object
+	 */
 	public function getAll( $table = false, $where = array(), $fields = array() ){
 		
 		if( ! $table )
@@ -353,6 +452,14 @@ class PanadaPDO implements Interfaces\Database {
 		return $this->getAll();
 	}
 	
+	/**
+	 * Get single record.
+	 * 
+	 * @param mix $table
+	 * @param array $where
+	 * @param array $fields
+	 * @return object
+	 */
 	public function getOne( $table = false, $where = array(), $fields = array() ){
 		
 		if( ! $table )
@@ -380,6 +487,12 @@ class PanadaPDO implements Interfaces\Database {
 		return $this->getOne();
 	}
 	
+	/**
+	 * Get value directly from single field.
+	 *
+	 * @param string @query
+	 * @return string|int Depen on it record value.
+	 */
 	public function getVar( $query = null ){
 		
 		if( is_null($query) )
@@ -391,6 +504,12 @@ class PanadaPDO implements Interfaces\Database {
 		return $result->$key[0];
 	}
 	
+	/**
+	 * Get multiple records
+	 *
+	 * @param string $query The sql query
+	 * @param string $type return data type option. the default is "object"
+	 */
 	public function results( $query, $type = 'object' ){
 		
 		if( is_null($query) )
@@ -412,6 +531,12 @@ class PanadaPDO implements Interfaces\Database {
 		return $return;
 	}
 	
+	/**
+	 * Get single record
+	 *
+	 * @param string $query The sql query
+	 * @param string $type return data type option. the default is "object"
+	 */
 	public function row( $query, $type = 'object' ){
 		
 		if( is_null($query) )
@@ -429,6 +554,13 @@ class PanadaPDO implements Interfaces\Database {
 			return $return;
 	}
 	
+	/**
+	 * Abstraction for insert
+	 *
+	 * @param string $table
+	 * @param array $data
+	 * @return boolean
+	 */
 	public function insert( $table, $data = array() ){
 		
 		$fields = array_keys($data);
@@ -439,11 +571,24 @@ class PanadaPDO implements Interfaces\Database {
 		return $this->query("INSERT INTO $table (" . implode(',',$fields) . ") VALUES ('".implode("','",$escaped_date)."')");
 	}
 	
+	/**
+	 * Get the id form last insert
+	 *
+	 * @return int
+	 */
 	public function insertId(){
 		
 		return $this->link->lastInsertId();
 	}
 	
+	/**
+	 * Abstraction for update
+	 *
+	 * @param string $table
+	 * @param array $dat
+	 * @param array $where
+	 * @return boolean
+	 */
 	public function update( $table, $dat, $where = null ){
 		
 		foreach($dat as $key => $val)
@@ -470,6 +615,13 @@ class PanadaPDO implements Interfaces\Database {
 		return $this->query( "UPDATE $table SET " . implode( ', ', $bits ) . ' WHERE ' . $criteria );
 	}
 	
+	/**
+	 * Abstraction for delete
+	 *
+	 * @param string
+	 * @param array
+	 * @return boolean
+	 */
 	public function delete( $table, $where = null ){
 		
 		if( ! empty($this->criteria) ){
@@ -489,21 +641,41 @@ class PanadaPDO implements Interfaces\Database {
 		return $this->query( "DELETE FROM $table WHERE " . $criteria );
 	}
 	
+	/**
+	 * Get this db version
+	 *
+	 * @return void
+	 */
 	public function version(){
 		
 		return $this->link->getAttribute(constant("PDO::ATTR_SERVER_VERSION")) ;
 	}
 	
+	/**
+	 * Close db connection
+	 *
+	 * @return void
+	 */
 	public function close(){
 		
 		$this->link = null;
 	}
 	
+	/**
+	 * Get last query
+	 *
+	 * @return string
+	 */
 	public function getLastQuery(){
 		
 		return $this->lastQuery;
 	}
 	
+	/**
+	 * Print the error
+	 *
+	 * @return string
+	 */
 	private function printError() {
 	
 		if ( $caller = RunException::getErrorCaller(5) )
